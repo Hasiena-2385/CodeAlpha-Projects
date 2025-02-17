@@ -1,0 +1,57 @@
+import java.util.*;
+
+public class StudentGradeTracker {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int stud, num, total;
+        try {
+        System.out.print("Enter number of Students: ");
+        stud = scanner.nextInt();
+        scanner.nextLine();   
+        for (int j = 1; j <= stud; j++) {
+            ArrayList<Integer> grade = new ArrayList<>();
+            total = 0; 
+            System.out.println("\nDetails for Student " + j);
+            System.out.print("Enter Student Name: ");
+            String name = scanner.nextLine();
+            System.out.print("Enter Register Number: ");
+            String regno = scanner.nextLine();
+            System.out.print("Enter number of Subjects: ");
+            num = scanner.nextInt();
+            
+            for (int i = 1; i <= num; i++) {
+                int marks;
+                while (true) {  
+                    System.out.print("Enter the grade for Subject " + i +" = " );
+                    marks = scanner.nextInt();
+                    if (marks >= 0 && marks <= 100) {
+                        break; 
+                    }
+                    System.out.println("Please Enter a Valid Grade!");
+                }
+
+                total += marks;
+                grade.add(marks);
+            }
+
+            // Student Grade Report
+            System.out.println("\n---------------------------------- Student Grade Result ------------------------------------");
+            System.out.println("Student Name      : " + name);
+            System.out.println("Register Number  : " + regno);
+            System.out.println("Total Marks         : " + total);
+            System.out.println("Highest Grade      : " + Collections.max(grade));
+            System.out.println("Lowest Grade      : " + Collections.min(grade));
+            System.out.println("Average Grade     : " + (total /(float)num)); 
+            System.out.println("----------------------------------------------------------------------------------------------------\n");
+            scanner.nextLine(); 
+            }
+        }
+        catch(Exception e) {
+        	System.out.print("Sorry an Exception Occured!");
+        }
+        finally {
+        	scanner.close();
+        }
+    }
+}
