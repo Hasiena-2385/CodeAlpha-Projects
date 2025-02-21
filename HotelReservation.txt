@@ -1,0 +1,193 @@
+package CodeAlpha;
+import java.util.Scanner;
+
+public class HotelReservation {
+    static String[] rooms = {
+        "Room 101 - Standard - ₹1000 per night - Available",
+        "Room 102 - Deluxe - ₹1500 per night - Available",
+        "Room 103 - Suite - ₹2500 per night - Available",
+        "Room 104 - Family Room - ₹3000 per night - Available",
+        "Room 105 - Double Room - ₹2000 per night - Available"
+    };
+    static boolean[] roomAvailability = {true, true, true, true, true};
+    static double[] roomPrices = {1000, 1500, 2500, 3000, 2000};
+    static String[] bookedGuestNames = {"", "", "", "", ""};
+    static int[] bookedNights = {0, 0, 0, 0, 0};
+    static double[] bookedTotalPrices = {0, 0, 0, 0, 0};
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            try {
+                System.out.println("\n--- Hotel Reservation System ---");
+                System.out.println("1. View Available Rooms");
+                System.out.println("2. Make a Reservation");
+                System.out.println("3. View Reserved Room Details");
+                System.out.println("4. Cancel Reservation");
+                System.out.println("5. Exit");
+                System.out.print("Choose an option (1, 2, 3, 4, or 5): ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+
+                if (choice == 1) {
+                    viewAvailableRooms();
+                } else if (choice == 2) {
+                    makeReservation(scanner);
+                } else if (choice == 3) {
+                    viewReservedRoomDetails();
+                } else if (choice == 4) {
+                    cancelReservation(scanner);
+                } else if (choice == 5) {
+                    System.out.println("Thank You for your Coopearation! \n Goodbye!");
+                    break;
+                } else {
+                    System.out.println("Invalid choice. Please choose a valid option.");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                scanner.nextLine();
+            }
+        }
+        scanner.close();
+    }
+
+    public static void viewAvailableRooms() {
+        System.out.println("\n--- Available Rooms ---");
+        boolean availableRoomFound = false;
+        for (int i = 0; i < rooms.length; i++) {
+            if (roomAvailability[i]) {
+                System.out.println(rooms[i]);
+                availableRoomFound = true;
+            }
+        }
+        if (!availableRoomFound) {
+            System.out.println("No rooms available at the moment.");
+        }
+    }
+
+    public static void makeReservation(Scanner scanner) {
+        try {
+            System.out.print("\nEnter your name: ");
+            String name = scanner.nextLine();
+            System.out.print("Enter the room number you want to book (101, 102, 103, 104, or 105): ");
+            int roomNumber = scanner.nextInt();
+
+            if (roomNumber < 101 || roomNumber > 105) {
+                System.out.println("Sorry! Invalid room number. Please choose a valid room");
+                return;
+            }
+
+            int roomIndex = roomNumber - 101;
+            if (roomAvailability[roomIndex]) {
+                roomAvailability[roomIndex] = false;
+                System.out.print("Enter the number of Days you will stay: ");
+                int nights = scanner.nextInt();
+                double extraServicesCost = 0;
+
+                while (true) {
+                    System.out.println("Would you like to add any extra services?");
+                    System.out.print("Enter 1 for Breakfast (₹150), 2 for Extra Bed (₹500), 0 for none: ");
+                    int serviceChoice = scanner.nextInt();
+                    if (serviceChoice == 1) {
+                        extraServicesCost += 150 * nights;
+                    } else if (serviceChoice == 2) {
+                        extraServicesCost += 500 * nights;
+                    } else if (serviceChoice == 0) {
+                        break;
+                    } else {
+                        System.out.println("Invalid choice. Please select 1 for Breakfast, 2 for Extra Bed, or 0 for none.");
+                    }
+                }
+
+                double basePrice = roomPrices[roomIndex] * nights;
+                double tax = basePrice * 0.18;
+                double totalPrice = basePrice + extraServicesCost + tax;
+
+                bookedGuestNames[roomIndex] = name;
+                bookedNights[roomIndex] = nights;
+                bookedTotalPrices[roomIndex] = totalPrice;
+
+                System.out.println("\n------------ Reservation Confirmed! --------------");
+                System.out.println("Guest Name: " + name);
+                System.out.println("Room: " + rooms[roomIndex]);
+                System.out.println("Number of Nights: " + nights);
+                System.out.println("Base Price: ₹" + basePrice);
+                System.out.println("Extra Services Cost: ₹" + extraServicesCost);
+                System.out.println("Tax (18%): ₹" + tax);
+                System.out.println("Total Price: ₹" + totalPrice);
+
+                processPayment(scanner, totalPrice);
+            } else {
+                System.out.println("Sorry, this room is already booked.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error during reservation: " + e.getMessage());
+        }
+    }
+
+    public static void processPayment(Scanner scanner, double totalPrice) {
+        try {
+            double paymentAmount = 0;
+            while (paymentAmount < totalPrice) {
+                System.out.print("\nTotal Price: ₹" + totalPrice);
+                System.out.println("\nPlease enter your payment amount: ");
+                paymentAmount = scanner.nextDouble();
+                scanner.nextLine();
+
+                if (paymentAmount < totalPrice) {
+                    System.out.println("Insufficient payment. Please enter the correct amount.");
+                }
+            }
+            double change = paymentAmount - totalPrice;
+            System.out.println("Payment successful! \nYour change: ₹" + change);
+            System.out.println("Thank you for booking with us!");
+        } catch (Exception e) {
+            System.out.println("Payment error: " + e.getMessage());
+        }
+    }
+
+    public static void viewReservedRoomDetails() {
+        System.out.println("\n--- Reserved Room Details ---");
+        boolean reservedRoomFound = false;
+        for (int i = 0; i < rooms.length; i++) {
+            if (!roomAvailability[i]) {
+                reservedRoomFound = true;
+                System.out.println("Room: " + rooms[i]);
+                System.out.println("Guest Name: " + bookedGuestNames[i]);
+                System.out.println("Number of Nights: " + bookedNights[i]);
+                System.out.println("Total Price: ₹" + bookedTotalPrices[i]);
+            }
+        }
+        if (!reservedRoomFound) {
+            System.out.println("No rooms have been reserved.");
+        }
+    }
+
+    public static void cancelReservation(Scanner scanner) {
+        try {
+            System.out.print("\nEnter the room number you want to cancel (101, 102, 103, 104, or 105): ");
+            int roomNumber = scanner.nextInt();
+
+            if (roomNumber < 101 || roomNumber > 105) {
+                System.out.println("Invalid room number. Please choose a valid room (101, 102, 103, 104, or 105).");
+                return;
+            }
+
+            int roomIndex = roomNumber - 101;
+            if (!roomAvailability[roomIndex]) {
+                roomAvailability[roomIndex] = true;
+                bookedGuestNames[roomIndex] = "";
+                bookedNights[roomIndex] = 0;
+                bookedTotalPrices[roomIndex] = 0;
+
+                System.out.println("\nReservation for " + rooms[roomIndex] + " has been successfully canceled.");
+            } else {
+                System.out.println("This room is not reserved. No cancellation needed.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error during cancellation: " + e.getMessage());
+        }
+    }
+}
+
+
