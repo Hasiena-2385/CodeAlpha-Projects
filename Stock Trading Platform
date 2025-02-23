@@ -1,0 +1,215 @@
+
+import java.util.HashMap;
+
+import java.util.Map;
+
+import java.util.Scanner;
+
+
+
+public class StockTradePlatform {
+
+    private static final Map<String, Double> marketData = new HashMap<>();
+
+    private static final Map<String, Integer> portfolio = new HashMap<>();
+
+    private static double cashBalance = 1000000.0; 
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+
+        initializeMarketData();
+
+        System.out.println("Welcome to My Stock Trading Platform (INR)");
+
+        System.out.println("Initial Cash Balance: ₹" + cashBalance);
+
+        while (true) {
+
+            printPortfolio();
+
+            System.out.println("1. Buy Stock");
+
+            System.out.println("2. Sell Stock");
+
+            System.out.println("3. Track Portfolio Value");
+
+            System.out.println("4. Exit");
+
+            System.out.println("\nChoose an action:");
+
+            int choice = scanner.nextInt();
+
+            scanner.nextLine();  
+
+            switch (choice) {
+
+                case 1:
+
+                    buyStock();
+
+                    break;
+
+                case 2:
+
+                    sellStock();
+
+                    break;
+
+                case 3:
+
+                    trackPortfolioValue();
+
+                    break;
+
+                case 4:
+
+                    System.out.println("Exiting....");
+
+                    return;
+
+                default:
+
+                    System.out.println("Invalid choice. Please try again.");
+
+            }
+
+        }
+
+    }
+
+    private static void initializeMarketData() {
+
+        marketData.put("TechInvent", 1500.0); 
+
+        marketData.put("GreenPower", 350.0); 
+
+        marketData.put("AutoRide", 900.0);    
+
+        marketData.put("HealthMax", 600.0);  
+
+    }
+
+    private static void buyStock() {
+
+        System.out.println("Enter stock symbol (TechInvent, GreenPower, AutoRide, HealthMax):");
+
+        String stockSymbol = scanner.nextLine();
+
+        if (!marketData.containsKey(stockSymbol)) {
+
+            System.out.println("Invalid stock symbol.");
+
+            return;
+
+        }
+
+        System.out.println("Enter quantity to buy:");
+
+        int quantity = scanner.nextInt();
+
+        scanner.nextLine(); 
+
+        double price = marketData.get(stockSymbol);
+
+        double totalCost = price * quantity;
+
+        if (cashBalance >= totalCost) {
+
+            cashBalance -= totalCost;
+
+            portfolio.put(stockSymbol, portfolio.getOrDefault(stockSymbol, 0) + quantity);
+
+            System.out.println("Bought " + quantity + " shares of " + stockSymbol + " for ₹" + totalCost);
+
+        } else {
+
+            System.out.println("Not enough funds to buy " + quantity + " shares of " + stockSymbol);
+
+        }
+
+    }
+
+    private static void sellStock() {
+
+        System.out.println("Enter stock symbol (TechInvent, GreenPower, AutoRide, HealthMax):");
+
+        String stockSymbol = scanner.nextLine();
+
+        if (!portfolio.containsKey(stockSymbol) || portfolio.get(stockSymbol) == 0) {
+
+            System.out.println("You don't own any shares of " + stockSymbol);
+
+            return;
+
+        }
+
+        System.out.println("Enter quantity to sell:");
+
+        int quantity = scanner.nextInt();
+
+        scanner.nextLine(); 
+
+        if (portfolio.get(stockSymbol) < quantity) {
+
+            System.out.println("You don't have enough shares to sell.");
+
+            return;
+
+        }
+
+        double price = marketData.get(stockSymbol);
+
+        double totalProceeds = price * quantity;
+
+        portfolio.put(stockSymbol, portfolio.get(stockSymbol) - quantity);
+
+        cashBalance += totalProceeds;
+
+        System.out.println("Sold " + quantity + " shares of " + stockSymbol + " for ₹" + totalProceeds);
+
+    }
+
+    private static void trackPortfolioValue() {
+
+        double totalValue = cashBalance;
+
+        for (Map.Entry<String, Integer> entry : portfolio.entrySet()) {
+
+            String stockSymbol = entry.getKey();
+
+            int quantity = entry.getValue();
+
+            double stockPrice = marketData.get(stockSymbol);
+
+            totalValue += stockPrice * quantity;
+
+        }
+
+        System.out.println("Total portfolio value: ₹" + totalValue);
+
+    }
+
+    private static void printPortfolio() {
+
+        System.out.println("\nCurrent Portfolio:");
+
+        for (Map.Entry<String, Integer> entry : portfolio.entrySet()) {
+
+            String stockSymbol = entry.getKey();
+
+            int quantity = entry.getValue();
+
+            double stockPrice = marketData.get(stockSymbol);
+
+            System.out.println(stockSymbol + ": " + quantity + " shares, Price: ₹" + stockPrice + " per share");
+
+        }
+
+        System.out.println("Cash balance: ₹" + cashBalance);
+
+    }
+
+}
+
